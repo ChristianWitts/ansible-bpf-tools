@@ -4,14 +4,14 @@
     name: "{{ item }}"
     state: present
   with_items:
-  - "@Development tools"
-  - elfutils-libelf-devel
-  - iperf
-  - cmake3
-  - bison
-  - yum-utils
-  - luajit
-  - luajit-devel
+    - "@Development tools"
+    - elfutils-libelf-devel
+    - iperf
+    - cmake3
+    - bison
+    - yum-utils
+    - luajit
+    - luajit-devel
 
 - name: "Create build dir"
   file:

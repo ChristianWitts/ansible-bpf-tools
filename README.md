@@ -3,13 +3,16 @@
 Configure and install BPF tools (bcc, ply, bpftrace)
 
 ## Using the role
+
 ### Installation
-```
+
+```shell
 ansible-galaxy install bpf-tools
 ```
 
 ### Example Playbook
-```
+
+```yaml
   - hosts: all
     roles:
       - bpf-tools
@@ -22,9 +25,11 @@ See [`defaults/main.yml`](defaults/main.yml).
 ## Testing the role
 
 ### Dependencies
-- Bundler 1.13.0+
-- Ruby 2.3.0+
+
+- Ansible 2.2+
+- Molecule
 - Docker 1.12.0+
-- Vagrant
-- Virtualbox
-- See [`Gemfile`](Gemfile)
+
+## License
+
+MIT
