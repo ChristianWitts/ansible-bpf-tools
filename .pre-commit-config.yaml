@@ -1,0 +1,10 @@
+---
+- repo: https://github.com/willthames/ansible-lint.git
+  sha: v3.4.23
+  hooks:
+    - id: ansible-lint
+      files: \.(yaml|yml)$
+      args:
+        - --exclude=.travis.yml
+        - -xANSIBLE0006,ANSIBLE0010,ANSIBLE0012,ANSIBLE0013
+        - --force-color

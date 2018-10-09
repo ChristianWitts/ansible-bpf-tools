@@ -1,0 +1,47 @@
+---
+- name: "Ensure modprobe.d directory exists"
+  file:
+    path: /etc/modprobe.d
+    state: directory
+    owner: root
+    group: root
+
+- name: "Esnure blacklist.conf exists"
+  file:
+    path: /etc/modprobe.d/blacklist.conf
+    state: touch
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Block the Speck kernel module from being loaded"
+  lineinfile:
+    path: /etc/modprobe.d/blacklist.conf
+    line: "blacklist CONFIG_CRYPTO_SPECK"
+    state: present
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Import ELRepo Key"
+  rpm_key:
+    state: present
+    key: https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+
+- name: "Enable the ELRepo repository"
+  yum:
+    name: http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
+
+- name: "Install mainline kernel"
+  yum:
+    name: kernel-ml
+    enablerepo: elrepo-kernel
+
+- name: "Update GRUB config file"
+  lineinfile:
+    path: /etc/default/grub
+    regexp: '^GRUB_DEFAULT='
+    line: 'GRUB_DEFAULT=0'
+
+- name: "Recreate kernel configuration"
+  command: grub2-mkconfig -o /boot/grub2/grub.cfg
