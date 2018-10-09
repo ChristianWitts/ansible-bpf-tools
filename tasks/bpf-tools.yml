@@ -1,0 +1,65 @@
+---
+# Setup and configure Ply
+- name: "Clone Ply"
+  git:
+    repo: https://github.com/iovisor/ply.git
+    dest: ${HOME}/build/ply
+    version: master
+
+- name: "Configure and build ply"
+  shell: |
+    ./autogen.sh
+    export CFLAGS=-I${HOME}/build/usr/include
+    ./configure
+    make -j `nproc --all`
+    make install
+  args:
+    chdir: ${HOME}/build/ply
+    executable: /bin/bash
+  register: ply_build_output
+
+- name: "Ply build output"
+  debug:
+    var: ply_build_output
+
+# Setup and configure bcc tools
+- name: "Clone bcc"
+  git:
+    repo: https://github.com/iovisor/bcc.git
+    dest: ${HOME}/build/bcc
+    version: master
+
+- name: "Configure and install bcc"
+  shell: |
+    cmake3 -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=/usr ../bcc
+    make -j `nproc --all`
+    make install
+  args:
+    chdir: ${HOME}/build/bcc-build
+    executable: /bin/bash
+  register: bcc_build_ouput
+
+- name: "BCC build output"
+  debug:
+    var: bcc_build_ouput
+
+# Setup and configure BPFtrace
+- name: Clone BPFtrace
+  git:
+    repo: https://github.com/iovisor/bpftrace.git
+    dest: ${HOME}/build/bpftrace
+    version: master
+
+- name: Configure and install BPFtrace
+  shell: |
+    mkdir build && cd build
+    cmake -DCMAKE_BUILD_TYPE=Debug ../
+    make -j `nproc --all`
+  args:
+    chdir: ${HOME}/build/bpftrace
+    executable: /bin/bash
+  register: bpftrace_build_output
+
+- name: BPFtrace build output
+  debug:
+    var: bpftrace_build_output
