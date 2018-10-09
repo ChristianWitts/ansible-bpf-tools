@@ -1,0 +1,85 @@
+---
+- name: "Install development tools"
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+  - "@Development tools"
+  - elfutils-libelf-devel
+  - iperf
+  - cmake3
+  - bison
+  - yum-utils
+  - luajit
+  - luajit-devel
+
+- name: "Create build dir"
+  file:
+    path: ${HOME}/build
+    state: directory
+
+- name: "Install kernel development"
+  yum:
+    name: kernel-ml-devel
+    enablerepo: elrepo-kernel
+
+- name: "Download kernel headers and load them"
+  shell: |
+    yumdownloader --enablerepo=elrepo-kernel kernel-ml-headers
+    rpm2cpio kernel-ml-headers-*.rpm | cpio -idmv
+  args:
+    chdir: ${HOME}/build
+    executable: /bin/bash
+  register: kernel_header_output
+
+- name: "Kernel header download and load output"
+  debug:
+    var: kernel_header_output
+
+- name: "Download LLVM & Clang"
+  get_url:
+    url: "{{ item }}"
+    dest: "${HOME}/build"
+  with_items:
+    - "http://releases.llvm.org/6.0.1/llvm-6.0.1.src.tar.xz"
+    - "http://releases.llvm.org/6.0.1/cfe-6.0.1.src.tar.xz"
+
+- name: "Create directories"
+  file:
+    path: "${HOME}/build/{{ item }}"
+    state: directory
+  with_items:
+    - "llvm-build"
+    - "cfe-build"
+
+- name: "Configure, and install LLVM"
+  shell: |
+    tar -xf llvm-6.0.1.src.tar.xz
+    cd llvm-build
+    cmake3 -G "Unix Makefiles" -DLLVM_TARGETS_TO_BUILD="BPF;X86" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr ../llvm-6.0.1.src
+    make -j `nproc --all`
+    make install
+  args:
+    chdir: ${HOME}/build
+    executable: /bin/bash
+  register: llvm_build_output
+
+- name: "LLVM build output"
+  debug:
+    var: llvm_build_output
+
+- name: "Configure, and install Clang"
+  shell: |
+    tar -xf cfe-6.0.1.src.tar.xz
+    cd cfe-build
+    cmake3 -G "Unix Makefiles" -DLLVM_TARGETS_TO_BUILD="BPF;X86" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr ../cfe-6.0.1.src
+    make -j `nproc --all`
+    make install
+  args:
+    chdir: ${HOME}/build
+    executable: /bin/bash
+  register: clang_build_output
+
+- name: "Clang build output"
+  debug:
+    var: clang_build_output
