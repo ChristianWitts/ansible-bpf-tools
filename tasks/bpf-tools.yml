@@ -5,6 +5,7 @@
     repo: https://github.com/iovisor/ply.git
     dest: ${HOME}/build/ply
     version: master
+    force: yes
 
 - name: "Configure and build ply"
   shell: |
@@ -28,6 +29,7 @@
     repo: https://github.com/iovisor/bcc.git
     dest: ${HOME}/build/bcc
     version: master
+    force: yes
 
 - name: "Configure and install bcc"
   shell: |
@@ -35,7 +37,7 @@
     make -j `nproc --all`
     make install
   args:
-    chdir: ${HOME}/build/bcc-build
+    chdir: ${HOME}/build/bcc
     executable: /bin/bash
   register: bcc_build_ouput
 
@@ -49,11 +51,12 @@
     repo: https://github.com/iovisor/bpftrace.git
     dest: ${HOME}/build/bpftrace
     version: master
+    force: yes
 
 - name: Configure and install BPFtrace
   shell: |
-    mkdir build && cd build
-    cmake -DCMAKE_BUILD_TYPE=Debug ../
+    mkdir -p build && cd build
+    cmake3 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CC_COMPILER=clang ../
     make -j `nproc --all`
   args:
     chdir: ${HOME}/build/bpftrace

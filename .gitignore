@@ -54,3 +54,4 @@ build-iPhoneSimulator/
 
 # Ignore python cache for molecule test runs
 **/__pycache__
+.vagrant

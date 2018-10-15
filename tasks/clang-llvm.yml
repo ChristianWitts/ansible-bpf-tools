@@ -1,17 +1,8 @@
 ---
 - name: "Install development tools"
   yum:
-    name: "{{ item }}"
+    name: ["@Development tools", "bison", "cmake3", "elfutils-libelf-devel", "iperf", "luajit", "luajit-devel", "yum-utils"]
     state: present
-  with_items:
-    - "@Development tools"
-    - elfutils-libelf-devel
-    - iperf
-    - cmake3
-    - bison
-    - yum-utils
-    - luajit
-    - luajit-devel
 
 - name: "Create build dir"
   file:
